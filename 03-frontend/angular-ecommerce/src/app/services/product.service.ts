@@ -11,7 +11,7 @@ import { map } from 'rxjs/operators' //reactive javascript different from react.
 //make get request to backend get URL ,and grab, unwrap the data 
 export class ProductService {
 
-  private baseUrl = ' http://localhost:8080/api/products ' ;
+  private baseUrl = ' http://localhost:8080/api/products' ;
 
   constructor(private httpClient: HttpClient) {
 
