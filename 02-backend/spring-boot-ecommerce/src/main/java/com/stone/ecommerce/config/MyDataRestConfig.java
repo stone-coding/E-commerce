@@ -22,7 +22,7 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
     private EntityManager entityManager;
 
     @Autowired
-    public MyDataRestConfig(EntityManager theEntityManager){
+    public MyDataRestConfig(EntityManager theEntityManager) {
         entityManager = theEntityManager;
     }
 
@@ -61,12 +61,12 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
         List<Class> entityClasses = new ArrayList<>();
 
         // -- get entity types for entities
-        for(EntityType tempEntityType: entities){
+        for (EntityType tempEntityType: entities){
             entityClasses.add(tempEntityType.getJavaType());
         }
 
         // -expose the entity ids for the array of entity/domain types
-        Class [] domainTypes = entityClasses.toArray(new Class[0]);
+        Class[] domainTypes = entityClasses.toArray(new Class[0]);
         config.exposeIdsFor(domainTypes);
     }
 }

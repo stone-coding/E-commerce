@@ -13,7 +13,7 @@ export class ProductListComponent {
   products: Product[] = [];
 
   currentCategoryId:number = 1;
-  currentCategoryName:string = ""
+  currentCategoryName:string = "";
 
   constructor(private productService: ProductService, 
               private route: ActivatedRoute
