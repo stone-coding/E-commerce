@@ -10,7 +10,7 @@ import { ProductCategoryMenuComponent } from './components/product-category-menu
 
 //1.define routers›
 const routes: Routes = [
-  // when path matches createnew instance of ProductListComponent component
+  // when path matches create new instance of ProductListComponent component
   {path:'category/:id/:name', component:ProductListComponent},
   {path:'category', component:ProductListComponent},
   {path:'products', component:ProductListComponent},
