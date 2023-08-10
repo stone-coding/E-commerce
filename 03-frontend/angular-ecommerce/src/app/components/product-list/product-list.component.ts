@@ -13,9 +13,11 @@ export class ProductListComponent {
   products: Product[] = [];
 
   currentCategoryId:number = 1;
+  currentCategoryName:string = ""
 
   constructor(private productService: ProductService, 
               private route: ActivatedRoute
+         
     ){}
 
   // similar to componentDidMount for class component
@@ -40,10 +42,13 @@ export class ProductListComponent {
       //get the "id" param string. convert string to a number using the "+" symbol
       //using ! is the non-null assertion operator tells compiler that object is not null
       this.currentCategoryId = +this.route.snapshot.paramMap.get('id')!; 
+
+      this.currentCategoryName = this.route.snapshot.paramMap.get('name')!; 
     }
     else {
       // no category id available... default to category id 1
       this.currentCategoryId = 1;
+      this.currentCategoryName = 'Books';
     }
 
     // now get the product for the given category id 

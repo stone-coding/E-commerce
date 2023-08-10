@@ -14,7 +14,7 @@ import { ProductCategoryMenuComponent } from './components/product-category-menu
 //1.define routers
 const routes: Routes = [
   // when path matches create new instance of ProductListComponent component
-  {path:'category/:id', component:ProductListComponent},
+  {path:'category/:id:name', component:ProductListComponent},
   {path:'category', component:ProductListComponent},
   {path:'products', component:ProductListComponent},
   // when no path for error path redirect to products
