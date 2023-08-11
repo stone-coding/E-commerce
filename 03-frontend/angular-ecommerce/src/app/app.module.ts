@@ -13,7 +13,7 @@ import { ProductDetailsComponent } from './components/product-details/product-de
 //1.define routers›
 const routes: Routes = [
   //router for product detail component
-  {path:'product/:id', component:ProductDetailsComponent},
+  {path:'products/:id', component:ProductDetailsComponent},
   //search routers
   {path:'search/:keyword', component:ProductListComponent},
   // when path matches create new instance of ProductListComponent component
