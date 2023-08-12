@@ -6,7 +6,7 @@
     <div class="container-fluid">
       <div class="row">
         <!-- loop over the collection of products  -->
-        <div *ngFor="let tempProduct of products" class="col-md-3">
+        <div *ngFor="let tempProduct of products" class="col-md-4">
           <div class="product-box">
 
             <a routerLink="/products/{{ tempProduct.id }}">
@@ -14,7 +14,7 @@
             </a>
 
             <a routerLink="/products/{{ tempProduct.id }}">
-              <h1>{{ tempProduct.name }}</h1>
+                {{tempProduct.name.length > 28? (tempProduct.name | slice : 0 : 25) + "..." : tempProduct.name}}
             </a>
 
             <div class="price">
