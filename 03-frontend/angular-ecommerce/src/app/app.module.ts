@@ -8,10 +8,12 @@ import { ProductService } from './services/product.service';
 import { Routes, RouterModule } from '@angular/router';
 import { ProductCategoryMenuComponent } from './components/product-category-menu/product-category-menu.component';
 import { SearchComponent } from './components/search/search.component';
+import { ProductDetailsComponent } from './components/product-details/product-details.component';
 
 //1.define routers
 const routes : Routes = [
   //router for product detail component
+  {path:'products/:id', component:ProductDetailsComponent},
   //search routers
   {path:'search/:keyword', component:ProductListComponent},
   // when path matches create new instance of ProductListComponent component
@@ -24,7 +26,7 @@ const routes : Routes = [
 ]
 
 @NgModule({
-  declarations: [AppComponent, ProductListComponent, ProductCategoryMenuComponent, SearchComponent],
+  declarations: [AppComponent, ProductListComponent, ProductCategoryMenuComponent, SearchComponent, ProductDetailsComponent],
   imports: [RouterModule.forRoot(routes), BrowserModule, HttpClientModule],
   providers: [ProductService],
   bootstrap: [AppComponent],

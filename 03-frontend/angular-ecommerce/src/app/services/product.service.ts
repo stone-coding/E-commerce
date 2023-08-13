@@ -16,6 +16,13 @@ export class ProductService {
 
   constructor(private httpClient: HttpClient) { }
 
+    getProductDetail(theProductId: number): Observable<Product> {
+      //need to build URL based on product id
+      const productUrl = `${this.baseUrl}/${theProductId}`;
+
+      return this.httpClient.get<Product>(productUrl);
+    }
+
     // returns an observable maps the JSON data from spring data rest to product array
     searchProducts(theKeyword: string): Observable<Product[]> {
       //need to build URL based on keyword

@@ -44,7 +44,7 @@ export class ProductListComponent {
   //but it is not executed until a consumer subscribes to it.
   //The subscribed consumer then receives notifications until the function completes, or until they unsubscribe.
   handleSearchProducts() {
-    // get the keyword from search bar 
+
     const theKeyword: string = this.route.snapshot.paramMap.get('keyword')!;
 
     // now search the product using given keyword

@@ -6,12 +6,21 @@
             <hr>
 
             <div class="row">
+
                 <!-- loop over the collection of products -->
                 <div *ngFor="let tempProduct of products" class="col-md-3">
 
                     <div class="product-box">
-                        <img src="{{tempProduct.imageUrl}}" class="img-responsive" alt="">
-                        <div> {{tempProduct.name.length > 28? (tempProduct.name | slice : 0 : 25) + "..." : tempProduct.name}}</div>
+
+                        <!-- make product image and product name as clickable URLs   -->
+                        <a routerLink="/products/{{tempProduct.id}}">
+                            <img src="{{tempProduct.imageUrl}}" class="img-responsive" alt="">
+                        </a>
+                        
+                        <a routerLink="/products/{{tempProduct.id}}">
+                            <div> {{tempProduct.name.length > 28? (tempProduct.name | slice : 0 : 25) + "..." : tempProduct.name}}</div>
+                        </a>
+                        
                         <div class="price"> {{tempProduct.unitPrice | currency: 'USD'}}</div>
                         <a href="#" class="primary-btn">Add to cart</a>
                     </div>
