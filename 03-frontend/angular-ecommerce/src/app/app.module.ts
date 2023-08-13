@@ -13,7 +13,7 @@ const routes : Routes = [
   //router for product detail component
   //search routers
   // when path matches create new instance of ProductListComponent component
-  {path:'category/:id', component: ProductListComponent},
+  {path:'category/:id/:name', component: ProductListComponent},
   {path:'category', component: ProductListComponent},
   {path:'products', component: ProductListComponent},
   // when no path for error path redirect to products

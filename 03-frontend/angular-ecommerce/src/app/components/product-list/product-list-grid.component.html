@@ -1,10 +1,14 @@
 <div class="main-content">
     <div class="section-content section-content-p30">
         <div class="container-fluid">
-            <div class="row">
 
+            <h4>Category: {{currentCategoryName}}</h4>
+            <hr>
+
+            <div class="row">
                 <!-- loop over the collection of products -->
-                <div *ngFor="let tempProduct of products" class="col-md-6">
+                <div *ngFor="let tempProduct of products" class="col-md-3">
+
                     <div class="product-box">
                         <img src="{{tempProduct.imageUrl}}" class="img-responsive" alt="">
                         <div> {{tempProduct.name}}</div>
