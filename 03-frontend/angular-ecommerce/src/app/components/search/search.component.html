@@ -1,0 +1,12 @@
+<div class="form-header">
+    <!-- Template Reference Variable(#myInput) in angular is used to access all the properties of any element inside the DOM.
+     It can also be a reference to an Angular component or directive or web component.  -->
+  <input
+    #myInput
+    type="text"
+    placeholder="Search for products..."
+    class="au-input au-input-xl"
+    (key.enter)="doSearch(myInput.value)"
+  />
+  <button (click)="doSearch(myInput.value)" class="au-btn-submit">Search</button>
+</div>
