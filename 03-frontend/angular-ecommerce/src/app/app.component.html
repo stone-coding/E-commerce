@@ -4,14 +4,23 @@
   <aside class="menu-sidebar d-none d-lg-block">
     <div class="logo">
       <a href="#">
-        <img
-          src="assets/images/logo.png"
-          alt="click2shop"
-          class="img-responsive"
-        />
+        <img src="assets/images/logo.png" alt="click2shop" class="img-responsive">
       </a>
     </div>
-    <app-product-category-menu></app-product-category-menu>
+    <div class="menu-sidebar-content js-scrollbar1">
+      <nav class="navbar-sidebar">
+        <ul class="list-unstyled navbar-list">
+          <!-- 4.set up router links to pass category id param  -->
+          <li>
+            <a routerLink="/category/1" routerLinkActive="active-link">Books</a>
+          </li>
+          <li>
+            <a routerLink="/category/2" routerLinkActive="active-link">Coffee Mugs</a>
+          </li>
+
+        </ul>
+      </nav>
+    </div>
   </aside>
   <!-- END MENU SIDEBAR-->
 
@@ -22,13 +31,17 @@
       <div class="section-content section-content-p30">
         <div class="container-fluid">
           <div class="header-wrap">
-
-            <app-search></app-search>
-           
+            <form class="form-header" onsubmit="return false;" method="GET">
+              <input class="au-input au-input-xl" type="text" name="search"
+                placeholder="Search for data ..." />
+              <button class="au-btn-submit" type="submit">
+                Search
+              </button>
+            </form>
             <div class="cart-area d-n">
               <a href="shopping-detail.html">
-                <div class="total">19.22 <span> 2</span></div>
-                <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                <div class="total">19.22 <span> 2</span> </div> <i class="fa fa-shopping-cart"
+                  aria-hidden="true"></i>
               </a>
             </div>
           </div>
@@ -40,11 +53,13 @@
 
     <!-- MAIN CONTENT-->
     <!-- 3.define router outlet  -->
+    <!-- router outlet acts as a placeholder that let the user to load the components 
+    dynamically based on the current route state -->
     <router-outlet></router-outlet>
-   
-  </div>
+    </div>
 </div>
-<!--END PAGE CONTENT-->
+<!-- END PAGE CONTAINER-->
+
 
 <footer>
   <ul>

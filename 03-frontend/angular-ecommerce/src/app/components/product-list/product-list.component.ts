@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Product } from 'src/app/common/product';
 import { ProductService } from 'src/app/services/product.service';
@@ -6,23 +6,21 @@ import { ProductService } from 'src/app/services/product.service';
 @Component({
   selector: 'app-product-list',
   templateUrl: './product-list-grid.component.html',
-  styleUrls: ['./product-list.component.css'],
+  styleUrls: ['./product-list.component.css']
 })
-export class ProductListComponent {
+export class ProductListComponent implements OnInit {
+
   products: Product[] = [];
   currentCategoryId: number = 1;
-  currentCategoryName: string = '';
-  searchMode: boolean = false;
 
-  constructor(
-    private productService: ProductService,
-    private route: ActivatedRoute
-  ) {}
+  constructor(private productService: ProductService,
+              private route: ActivatedRoute) { }
+
 
   // similar to componentDidMount for class component
   // useEffect for the functional component
-  ngOnInit(): void {
-    this.route.paramMap.subscribe(() => {
+  ngOnInit() {
+    this.route.paramMap.subscribe(()=>{
       this.listProducts();
     });
   }
@@ -32,28 +30,7 @@ export class ProductListComponent {
   //The subscribed consumer then receives notifications until the function completes, or until they unsubscribe.
   //Assign result to Product array
   listProducts() {
-    this.searchMode = this.route.snapshot.paramMap.has('keyword');
 
-    if (this.searchMode) {
-      this.handleSearchProducts();
-    } else {
-      this.handleListProducts();
-    }
-  }
-
-  // get the keyword in searchbar 
-  handleSearchProducts() {
-    const theKeyword: string = this.route.snapshot.paramMap.get('keyword')!;
-
-    // now search the product using given keyword
-    this.productService.searchProducts(theKeyword).subscribe(
-      data => {
-        this.products = data;
-      }
-    );
-  }
-
-  handleListProducts() {
     // 5.Enhance ProductListComponent to read category id param
     //check if "id" parameter is available
     const hasCategoryId: boolean = this.route.snapshot.paramMap.has('id');
@@ -63,11 +40,11 @@ export class ProductListComponent {
       //using ! is the non-null assertion operator tells compiler that object is not null
       this.currentCategoryId = +this.route.snapshot.paramMap.get('id')!;
 
-      this.currentCategoryName = this.route.snapshot.paramMap.get('name')!;
+      
     } else {
       // no category id available... default to category id 1
       this.currentCategoryId = 1;
-      this.currentCategoryName = 'Books';
+    
     }
 
     // now get the product for the given category id
@@ -77,4 +54,5 @@ export class ProductListComponent {
         this.products = data;
       });
   }
+
 }
