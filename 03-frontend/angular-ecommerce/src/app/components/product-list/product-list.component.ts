@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Product } from 'src/app/common/product';
 import { ProductService } from 'src/app/services/product.service';
@@ -8,25 +8,26 @@ import { ProductService } from 'src/app/services/product.service';
   templateUrl: './product-list-grid.component.html',
   styleUrls: ['./product-list.component.css'],
 })
-export class ProductListComponent {
-
+export class ProductListComponent implements OnInit {
   products: Product[] = [];
   currentCategoryId: number = 1;
   previousCategoryId: number = 1;
   currentCategoryName: string = '';
   searchMode: boolean = false;
+  
 
-  // new property for pagination
-  thePageNumber: number = 1
+  // new properties for pagination
+  thePageNumber: number = 1;
   thePageSize: number = 5;
   theTotalElements: number = 0;
 
-  previousKeyword: string = ""
-  
+  previousKeyword: string = '';
 
+  //inject the ActivatedRoute that loaded the component
+  //which is for accessing route parameters
   constructor(
     private productService: ProductService,
-    private route: ActivatedRoute,
+    private route: ActivatedRoute
   ) {}
 
   // similar to componentDidMount for class component
@@ -36,7 +37,6 @@ export class ProductListComponent {
       this.listProducts();
     });
   }
-
 
   listProducts() {
     // check keyword from router 'search/:keyword' in app.module.ts and if it has given keyword
@@ -54,7 +54,6 @@ export class ProductListComponent {
   //but it is not executed until a consumer subscribes to it.
   //The subscribed consumer then receives notifications until the function completes, or until they unsubscribe.
   handleSearchProducts() {
-
     const theKeyword: string = this.route.snapshot.paramMap.get('keyword')!;
 
     // if we have a different keyword than previous
@@ -65,12 +64,11 @@ export class ProductListComponent {
 
     this.previousKeyword = theKeyword;
     console.log(`keyword=${theKeyword}, thePageNumber=${this.thePageNumber}`);
-    
 
-    // now search the product using given keyword
-    this.productService.SearchProductPaginate(this.thePageNumber - 1, 
-                                              this.thePageSize,
-                                              theKeyword).subscribe(this.processResult());
+    //now search for the products using keyword
+    this.productService.searchProductsPaginate(this.thePageNumber - 1, 
+                                               this.thePageSize,
+                                               theKeyword).subscribe(this.processResult());
   }
 
   handleListProducts() {
@@ -82,48 +80,47 @@ export class ProductListComponent {
       //get the "id" param string. convert string to a number using the "+" symbol
       //using ! is the non-null assertion operator tells compiler that object is not null
       this.currentCategoryId = +this.route.snapshot.paramMap.get('id')!;
-     
+
       // get the name "param" string
       this.currentCategoryName = this.route.snapshot.paramMap.get('name')!;
     } else {
       // no category id available... default to category id 1
       this.currentCategoryId = 1;
       this.currentCategoryName = 'Books';
+
+      /**
+       * check if we have different category than previous 
+       * Note:Angular will reuse a component if it is currently being viewed
+       */
+      if(this.previousCategoryId != this.currentCategoryId) {
+        this.thePageNumber = 1
+      }
+  
+      this.previousCategoryId = this.currentCategoryId
+      console.log(`currentCategoryId=${this.currentCategoryId}, thePageNumber=${this.thePageNumber}`);
+
     }
 
-    /**
-     * check if we have different category than previous 
-     * Note:Angular will reuse a component if it is currently being viewed
-     */
-
-    // if we have a different category id than previous
-    // then reset thePageNumber back to 1
-    if(this.previousCategoryId != this.currentCategoryId) {
-      this.thePageNumber = 1
-    }
-
-    this.previousCategoryId = this.currentCategoryId
-    console.log(`currentCategoryId=${this.currentCategoryId}, thePageNumber=${this.thePageNumber}`);
-    
-    
+   
 
     // update ProductListComponent to handle pagination 
     // pagination component pages are 1 bases, and on spring data rest are 0 zero,
     // so we have to minus 1 to map the spring backend data 
     // unwraps the JSON from spring Data REST embedded entry
     this.productService
-      .getProductListPaginate(this.thePageNumber - 1,
-                              this.thePageSize,
-                              this.currentCategoryId).subscribe(this.processResult());
-    
+      .getProductListPaginate(this.thePageNumber - 1, 
+                              this.thePageSize, 
+                              this.currentCategoryId)
+      .subscribe(this.processResult());
   }
 
-  updatePageSize(pageSize: string){
-    this.thePageSize = +pageSize;
+  //set page size on parameter value
+  //convert string to number using +operator 
+  updatePageSize(pageSize: string) {
+    this.thePageSize =+pageSize;
     this.thePageNumber = 1;
     this.listProducts();
   }
-
 
   processResult(){
     return (data: any) => {
@@ -136,12 +133,5 @@ export class ProductListComponent {
       this.thePageSize = data.page.size;
       this.theTotalElements = data.page.totalElements;
     }
-  }
-
-  addToCart(theProduct: Product) {
-    console.log(`Adding to cart: ${theProduct.name}, ${theProduct.unitPrice}`);
-   
-    //To do real works...
-
   }
 }

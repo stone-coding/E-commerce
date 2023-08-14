@@ -9,38 +9,43 @@ import { ProductCategory } from '../common/product-category';
   providedIn: 'root',
 })
 export class ProductService {
-  private baseUrl = ' http://localhost:8080/api/products';
+  private baseUrl = 'http://localhost:8080/api/products';
 
   private categoryUrl = ' http://localhost:8080/api/product-category';
 
   constructor(private httpClient: HttpClient) {}
 
-  // returns an observable maps the JSON data from spring data rest to GetResponseProducts
-  SearchProductPaginate(
+  // returns an observable maps the JSON data from spring data rest to GetResponseProducts interface
+  searchProductsPaginate(
     thePage: number,
     thePageSize: number,
     theKeyword: string
   ): Observable<GetResponseProducts> {
-    //need to build URL based on keyword, page, and page size
-    const searchUrl = `${this.baseUrl}/search/findByNameContaining?name=${theKeyword}`
-                      + `&page=${thePage}&size=${thePageSize}`;
+
+    //need to build URL based on keyword, page and size
+    const searchUrl =
+      `${this.baseUrl}/search/findByNameContaining?name=${theKeyword}` +
+      `&page=${thePage}&size=${thePageSize}`;
 
     return this.httpClient.get<GetResponseProducts>(searchUrl);
   }
 
-  // returns an observable maps the JSON data from spring data rest to GetResponseProducts
+  // returns an observable maps the JSON data from spring data rest to GetResponseProducts interface
   getProductListPaginate(
     thePage: number,
     thePageSize: number,
     theCategoryId: number
   ): Observable<GetResponseProducts> {
-    //need to build URL based on category id, page, and page size
-    const searchUrl = `${this.baseUrl}/search/findByCategoryId?id=${theCategoryId}`
-                      + `&page=${thePage}&size=${thePageSize}`;
+
+    //need to build URL based on category id, page and size
+    const searchUrl =
+      `${this.baseUrl}/search/findByCategoryId?id=${theCategoryId}` +
+      `&page=${thePage}&size=${thePageSize}`;
 
     return this.httpClient.get<GetResponseProducts>(searchUrl);
   }
 
+  // returns an observable maps the JSON data from spring data rest to Product
   getProductDetail(theProductId: number): Observable<Product> {
     //need to build URL based on product id
     const productUrl = `${this.baseUrl}/${theProductId}`;
@@ -52,17 +57,11 @@ export class ProductService {
   searchProducts(theKeyword: string): Observable<Product[]> {
     //need to build URL based on keyword
     const searchUrl = `${this.baseUrl}/search/findByNameContaining?name=${theKeyword}`;
+
     return this.getProducts(searchUrl);
   }
 
-  // returns an observable maps the JSON data from spring data rest to product array
-  getProductList(theCategoryId: number): Observable<Product[]> {
-    //need to build URL based on category id
-    const searchUrl = `${this.baseUrl}/search/findByCategoryId?id=${theCategoryId}`;
-    return this.getProducts(searchUrl);
-  }
-
-  //Common code in SearchProducts and getProductList
+  // Common code in SearchProducts and getProductList
   private getProducts(searchUrl: string): Observable<Product[]> {
     return this.httpClient
       .get<GetResponseProducts>(searchUrl)
@@ -73,9 +72,23 @@ export class ProductService {
   // returns an observable maps the JSON data from sprint data rest to productCategory array
   getProductCategories(): Observable<ProductCategory[]> {
     return this.httpClient
-      .get<GetResponseProductsCategory>(this.categoryUrl)
+      .get<GetResponseProductCategory>(this.categoryUrl)
       .pipe(map((response) => response._embedded.productCategory));
   }
+
+  // returns an observable maps the JSON data from spring data rest to product array
+  getProductList(theCategoryId: number): Observable<Product[]> {
+    //need to build URL based on category id
+    const searchUrl = `${this.baseUrl}/search/findByCategoryId?id=${theCategoryId}`;
+    return this.getProducts(searchUrl);
+  }
+}
+
+// unwraps the JSON from spring Data REST embedded entry
+interface GetResponseProductCategory {
+  _embedded: {
+    productCategory: ProductCategory[];
+  };
 }
 
 // unwraps the JSON from spring Data REST embedded entry
@@ -89,12 +102,5 @@ interface GetResponseProducts {
     totalElements: number; // all elements in db
     totalPage: number; // total pages available
     number: number; // current page number
-  };
-}
-
-// unwraps the JSON from spring Data REST embedded entry
-interface GetResponseProductsCategory {
-  _embedded: {
-    productCategory: ProductCategory[];
   };
 }

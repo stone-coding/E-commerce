@@ -1,14 +1,19 @@
 <div class="page-wrapper">
-
   <!-- MENU SIDEBAR-->
   <aside class="menu-sidebar d-none d-lg-block">
     <div class="logo">
-      <a href="#">
-        <img src="assets/images/logo.png" alt="click2shop" class="img-responsive">
+      <a href="home.html">
+        <img
+          src="assets/images/logo.png"
+          alt="luv2shop"
+          class="img-responsive"
+        />
       </a>
     </div>
-    <!-- product category menu component selector  -->
-    <app-product-category-menu></app-product-category-menu>
+
+     <!-- product category menu component selector  -->
+     <app-product-category-menu></app-product-category-menu>
+
   </aside>
   <!-- END MENU SIDEBAR-->
 
@@ -20,12 +25,15 @@
         <div class="container-fluid">
           <div class="header-wrap">
 
-            <!-- app search component selector -->
+            <!-- app search component selector  -->
             <app-search></app-search>
-
-             <!-- app cart status selector -->
-            <app-cart-status></app-cart-status>
-        
+            
+            <div class="cart-area d-n">
+              <a href="shopping-detail.html">
+                <div class="total">19.22 <span> 2</span></div>
+                <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+              </a>
+            </div>
           </div>
           <div class="account-wrap"></div>
         </div>
@@ -38,10 +46,9 @@
     <!-- router outlet acts as a placeholder that let the user to load the components 
     dynamically based on the current route state -->
     <router-outlet></router-outlet>
-    </div>
-</div>
-<!-- END PAGE CONTAINER-->
 
+  </div>
+</div>
 
 <footer>
   <ul>
