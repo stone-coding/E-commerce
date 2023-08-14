@@ -114,7 +114,7 @@ export class ProductListComponent {
     this.productService
       .getProductListPaginate(this.thePageNumber - 1,
                               this.thePageSize,
-                              this.currentCategoryId).subscribe(this.processResult);
+                              this.currentCategoryId).subscribe(this.processResult());
     
   }
 
