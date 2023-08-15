@@ -16,24 +16,33 @@
         <div *ngFor="let tempProduct of products" class="col-md-3">
           <div class="product-box">
             <!-- make product image and product name as clickable URLs   -->
-            <a routerLink="/products/{{ tempProduct.id }}">
-              <img src="{{ tempProduct.imageUrl }}" class="img-responsive" />
-            </a>
+            <!-- image of product  -->
+            <div>
+                <a routerLink="/products/{{ tempProduct.id }}">
+                    <img src="{{ tempProduct.imageUrl }}" class="img-responsive" />
+                  </a>
+            </div>
+            
 
-            <a routerLink="/products/{{ tempProduct.id }}">
-              <div>
-                {{
-                  tempProduct.name.length > 28
-                    ? (tempProduct.name | slice : 0 : 25) + "..."
-                    : tempProduct.name
-                }}
-              </div>
-            </a>
-
+            <!-- name of product  -->
+            <div>
+                <a routerLink="/products/{{ tempProduct.id }}">
+                    <div>
+                      {{
+                        tempProduct.name.length > 28
+                          ? (tempProduct.name | slice : 0 : 25) + "..."
+                          : tempProduct.name
+                      }}
+                    </div>
+                  </a>
+            </div>
+            
+            <!-- price of product  -->
             <div class="price">
               {{ tempProduct.unitPrice | currency : "USD" }}
             </div>
 
+            <!-- add to cart button  -->
             <button
               (click)="addToCart(tempProduct)"
               class="btn btn-primary btn-sm"
