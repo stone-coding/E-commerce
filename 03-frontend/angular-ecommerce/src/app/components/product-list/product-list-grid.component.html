@@ -1,7 +1,14 @@
 <div class="main-content">
   <div class="section-content section-content-p30">
-    <h4>Category: {{ currentCategoryName }}</h4>
-    <hr />
+    <!-- <h4>Category: {{ currentCategoryName }}</h4>
+    <hr/> -->
+
+    <div *ngIf="searchMode==false; else display">
+        <h4>Category: {{ currentCategoryName }}</h4>
+    </div>
+    <ng-template #display>
+        <h4>Search Result: Related to '{{previousKeyword}}'</h4>
+    </ng-template>
 
     <div class="container-fluid">
       <div class="row">
@@ -10,11 +17,7 @@
           <div class="product-box">
             <!-- make product image and product name as clickable URLs   -->
             <a routerLink="/products/{{ tempProduct.id }}">
-              <img
-                src="{{ tempProduct.imageUrl }}"
-                class="img-responsive"
-                alt=""
-              />
+              <img src="{{ tempProduct.imageUrl }}" class="img-responsive" />
             </a>
 
             <a routerLink="/products/{{ tempProduct.id }}">
@@ -31,7 +34,12 @@
               {{ tempProduct.unitPrice | currency : "USD" }}
             </div>
 
-            <a href="#" class="primary-btn">Add to cart</a>
+            <button
+              (click)="addToCart(tempProduct)"
+              class="btn btn-primary btn-sm"
+            >
+              Add to cart
+            </button>
           </div>
         </div>
 
@@ -52,7 +60,6 @@
 
           <div class="col-md-6">
             <div class="row">
-
               <div class="col-md-9" style="padding-left: 30%">
                 <!-- left side are params of nbg-pagination component  -->
                 <!-- right side are properties of productListComponent  -->
@@ -67,19 +74,21 @@
                 </ngb-pagination>
               </div>
 
-                <div class="col-md-3 mt-2" style="text-align: right;">
-                    <span class="mr-2">Page Size</span>
+              <div class="col-md-3 mt-2" style="text-align: right">
+                <span class="mr-2">Page Size</span>
 
-                    <!-- when user select a page call updatePageSize in product-list.component.ts  -->
-                    <select #myPageSelect (change)="updatePageSize(myPageSelect.value)">
-                        <option>2</option>
-                        <option selected="true">5</option>
-                        <option>10</option>
-                        <option>20</option>
-                        <option>50</option>
-                    </select>
-                </div>
-
+                <!-- when user select a page call updatePageSize in product-list.component.ts  -->
+                <select
+                  #myPageSelect
+                  (change)="updatePageSize(myPageSelect.value)"
+                >
+                  <option>2</option>
+                  <option selected="true">5</option>
+                  <option>10</option>
+                  <option>20</option>
+                  <option>50</option>
+                </select>
+              </div>
             </div>
           </div>
         </div>

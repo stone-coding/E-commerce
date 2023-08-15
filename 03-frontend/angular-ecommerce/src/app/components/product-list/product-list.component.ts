@@ -23,6 +23,8 @@ export class ProductListComponent implements OnInit {
 
   previousKeyword: string = '';
 
+  theKeyword: string ='';
+
   //inject the ActivatedRoute that loaded the component
   //which is for accessing route parameters
   constructor(
@@ -43,9 +45,10 @@ export class ProductListComponent implements OnInit {
     // pass it to the value param in doSearch() in SearchComponent
     this.searchMode = this.route.snapshot.paramMap.has('keyword');
 
-    if (this.searchMode) {
+    if (this.searchMode && this.route.snapshot.paramMap.get('keyword') != '') {
       this.handleSearchProducts();
     } else {
+      this.searchMode = false;
       this.handleListProducts();
     }
   }
@@ -133,5 +136,9 @@ export class ProductListComponent implements OnInit {
       this.thePageSize = data.page.size;
       this.theTotalElements = data.page.totalElements;
     }
+  }
+
+  addToCart(theProduct: Product) {
+    console.log(`Adding to cart: ${theProduct.name}, ${theProduct.unitPrice}`);
   }
 }
