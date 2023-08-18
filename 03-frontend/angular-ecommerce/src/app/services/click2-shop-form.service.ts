@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { Country } from '../common/country';
 import {map} from 'rxjs/operators'
 import { State } from '../common/state';
+import { environment } from 'src/environments/environment';
 
 
 @Injectable({
@@ -11,8 +12,8 @@ import { State } from '../common/state';
 })
 export class Click2ShopFormService {
 
-  private countriesUrl = 'http://localhost:8080/api/countries'; 
-  private statesUrl = 'http://localhost:8080/api/states'; 
+  private countriesUrl = environment.click2shopApiUrl + '/countries'; 
+  private statesUrl = environment.click2shopApiUrl + '/states'; 
 
   constructor(private httpClient: HttpClient) { }
 
