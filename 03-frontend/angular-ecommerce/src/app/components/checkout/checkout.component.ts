@@ -31,6 +31,8 @@ export class CheckoutComponent implements OnInit {
 
   shippingAddressStates: State[] = [];
   billingAddressStates: State[] = [];
+
+  storage: Storage = sessionStorage;
   
 
   // inject form service and click2shopformservice
@@ -43,6 +45,11 @@ export class CheckoutComponent implements OnInit {
   ngOnInit(): void {
 
     this.reviewCartDetails();
+
+
+    // read the user's email from the browser storage
+    const theEmail = JSON.parse(this.storage.getItem('userEmail')!)
+
 
     this.checkoutFormGroup = this.formBuilder.group({
       // customer: name of key in form group
@@ -57,7 +64,7 @@ export class CheckoutComponent implements OnInit {
         [Validators.required, Validators.minLength(2),
         Click2ShopValidators.notOnlyWhitespace
         ]),
-        email: new FormControl('', 
+        email: new FormControl(theEmail, 
                             [Validators.required, Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')]),
       }),
 
