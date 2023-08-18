@@ -37,7 +37,7 @@ public class SecurityConfiguration {
 
         // disable CSRF since we are not using Cookies for session tracking
         http.csrf().disable();
-        
+
         return http.build();
     }
 }
