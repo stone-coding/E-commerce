@@ -1,9 +1,6 @@
 package com.stone.ecommerce.config;
 
-import com.stone.ecommerce.entity.Country;
-import com.stone.ecommerce.entity.Product;
-import com.stone.ecommerce.entity.ProductCategory;
-import com.stone.ecommerce.entity.State;
+import com.stone.ecommerce.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -43,9 +40,10 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
         //DISABLE Http methods for Product and ProductCategory :PUT, POST, DELETE
         disableHttpMethods(Product.class, config, theUnSupportedActions);
         disableHttpMethods(ProductCategory.class, config, theUnSupportedActions);
-        //DISABLE Http methods for Country and State :PUT, POST, DELETE
+        //DISABLE Http methods for Country, Order, and State :PUT, POST, DELETE
         disableHttpMethods(Country.class, config, theUnSupportedActions);
         disableHttpMethods(State.class, config, theUnSupportedActions);
+        disableHttpMethods(Order.class, config, theUnSupportedActions);
 
 
         // call an internal helper method
