@@ -1,11 +1,11 @@
-import { NgModule } from '@angular/core';
+import { Injector, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { ProductListComponent } from './components/product-list/product-list.component';
 import { HttpClientModule } from '@angular/common/http'
 import { ProductService } from './services/product.service';
-import { Routes, RouterModule } from '@angular/router';
+import { Routes, RouterModule, Router } from '@angular/router';
 import { ProductCategoryMenuComponent } from './components/product-category-menu/product-category-menu.component';
 import { SearchComponent } from './components/search/search.component';
 import { ProductDetailsComponent } from './components/product-details/product-details.component';
@@ -17,16 +17,30 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './components/login/login.component';
 import { LoginStatusComponent } from './components/login-status/login-status.component';
 
-import { OktaAuthModule, OktaCallbackComponent,OKTA_CONFIG} from '@okta/okta-angular';   
+import { OktaAuthModule, OktaCallbackComponent,OKTA_CONFIG, OktaAuthGuard} from '@okta/okta-angular';   
 import { OktaAuth } from '@okta/okta-auth-js';
 import myAppConfig from './config/my-app-config';
+import { MembersPageComponent } from './components/members-page/members-page.component';
 
 const oktaConfig = myAppConfig.oidc;
 
 const oktaAuth = new OktaAuth(oktaConfig); //create oktaAuth pass oktaConfig
 
+function sendToLoginPage(oktaAuth: OktaAuth, injector: Injector){
+  //use injector to access any service available within your application
+  const router = injector.get(Router);
+
+  //Redirect the user to your custom login page
+  router.navigate(['/login']);
+}
+
 //1.define routers
 const routes: Routes = [
+
+  //router for member only page, if authenticated, give access to route, else send to
+  //login page
+  {path:'members', component:MembersPageComponent, canActivate: [OktaAuthGuard],
+                   data: {onAuthRequired: sendToLoginPage}},
   //router for login status component
   {path:'login/callback', component:OktaCallbackComponent},
   {path:'login', component:LoginComponent},
@@ -57,7 +71,8 @@ const routes: Routes = [
     CartDetailsComponent,
     CheckoutComponent,
     LoginComponent,
-    LoginStatusComponent
+    LoginStatusComponent,
+    MembersPageComponent
   ],
   imports: [
     RouterModule.forRoot(routes),

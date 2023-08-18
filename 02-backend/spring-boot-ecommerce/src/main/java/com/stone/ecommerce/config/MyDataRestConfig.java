@@ -5,6 +5,7 @@ import com.stone.ecommerce.entity.Product;
 import com.stone.ecommerce.entity.ProductCategory;
 import com.stone.ecommerce.entity.State;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
@@ -20,6 +21,9 @@ import java.util.Set;
 @Configuration
 public class MyDataRestConfig implements RepositoryRestConfigurer {
 
+    @Value("${allowed.origins}") // inject allowed.origins from resource.properties
+    private String[] theAllowedOrigins;
+
     //autowire JPA entity manager
     private EntityManager entityManager;
 
@@ -31,7 +35,8 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
     @Override
     public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
 
-        HttpMethod[] theUnSupportedActions = {HttpMethod.PUT, HttpMethod.POST, HttpMethod.DELETE};
+        HttpMethod[] theUnSupportedActions = {HttpMethod.PUT, HttpMethod.POST,
+                                              HttpMethod.DELETE, HttpMethod.PATCH};
 
 
 
@@ -45,6 +50,9 @@ public class MyDataRestConfig implements RepositoryRestConfigurer {
 
         // call an internal helper method
         exposeIds(config);
+
+        //configure cors mapping
+        cors.addMapping(config.getBasePath()+ "/**").allowedOrigins(theAllowedOrigins);
 
         RepositoryRestConfigurer.super.configureRepositoryRestConfiguration(config, cors);
     }
