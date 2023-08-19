@@ -4,8 +4,7 @@
 
 export const environment = {
   production: false,
-  click2shopApiUrl: "https://localhost:9898/api",
-  stripePublishableKey:"pk_test_51NgSkAFpaVKIEfqGk9iM2deaWrqruAEjgZ7MkZozkxv0Io9GwPpmDA2jgvA4z45lF8lPdL4ow8WCH2nMFdLY4ESp00rUtOr2AL",
+  click2shopApiUrl: "https://localhost:9898/api"
 };
 
 /*

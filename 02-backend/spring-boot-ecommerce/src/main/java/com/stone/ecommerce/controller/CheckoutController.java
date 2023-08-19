@@ -1,15 +1,25 @@
 package com.stone.ecommerce.controller;
 
+import com.stone.ecommerce.dto.PaymentInfo;
 import com.stone.ecommerce.dto.Purchase;
 import com.stone.ecommerce.dto.PurchaseResponse;
 import com.stone.ecommerce.service.CheckoutService;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.logging.Logger;
 
 
 @RestController
 @RequestMapping("/api/checkout")
 public class CheckoutController {
+
+    private Logger logger =Logger.getLogger(getClass().getName());
+
     private CheckoutService checkoutService;
 
     @Autowired
@@ -24,6 +34,18 @@ public class CheckoutController {
         PurchaseResponse purchaseResponse = checkoutService.placeOrder(purchase);
 
         return purchaseResponse;
+    }
+
+    @PostMapping("/payment-intent")
+    public ResponseEntity<String> createPaymentIntent(@RequestBody PaymentInfo paymentInfo) throws StripeException {
+
+        logger.info("paymentInfo.amount: " + paymentInfo.getAmount());
+
+        //receive the custom paymentInfo in checkout service
+        PaymentIntent paymentIntent = checkoutService.createPaymentIntent(paymentInfo);
+        //change it to Json data
+        String paymentStr = paymentIntent.toJson();
+        return new ResponseEntity<>(paymentStr, HttpStatus.OK);
     }
 
 }

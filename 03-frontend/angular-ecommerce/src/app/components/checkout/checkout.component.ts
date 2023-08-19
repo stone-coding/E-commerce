@@ -4,12 +4,14 @@ import { Router } from '@angular/router';
 import { Country } from 'src/app/common/country';
 import { Order } from 'src/app/common/order';
 import { OrderItem } from 'src/app/common/order-item';
+import { PaymentInfo } from 'src/app/common/payment-info';
 import { Purchase } from 'src/app/common/purchase';
 import { State } from 'src/app/common/state';
 import { CartService } from 'src/app/services/cart.service';
 import { CheckoutService } from 'src/app/services/checkout.service';
 import { Click2ShopFormService } from 'src/app/services/click2-shop-form.service';
 import { Click2ShopValidators } from 'src/app/validators/click2-shop-validators';
+import { environment } from 'src/environments/environment';
 
 
 @Component({
@@ -35,6 +37,15 @@ export class CheckoutComponent implements OnInit {
   storage: Storage = sessionStorage;
   
 
+  // initialize Stripe API
+  stripe = Stripe(environment.stripePublishableKey);
+
+  paymentInfo: PaymentInfo = new PaymentInfo();
+  cardElement: any;
+  displayError: any = "";
+
+  isDisabled: boolean = false;
+
   // inject form service and click2shopformservice
   constructor(private formBuilder:FormBuilder,
               private click2shopformservice: Click2ShopFormService,
@@ -43,6 +54,9 @@ export class CheckoutComponent implements OnInit {
               private router: Router ) { }
 
   ngOnInit(): void {
+
+    //set up Stripe payment form
+    this.setupStripePaymentForm()
 
     this.reviewCartDetails();
 
@@ -110,42 +124,47 @@ export class CheckoutComponent implements OnInit {
         ])
       }),
 
-      creditCard: this.formBuilder.group({
-        cardType:new FormControl('', [Validators.required]),
-        nameOnCard: new FormControl('', 
-        [Validators.required, Validators.minLength(2),
-        Click2ShopValidators.notOnlyWhitespace
-        ]),
-        cardNumber:new FormControl('', [Validators.required, Validators.pattern('[0-9]{16}')]),
-        securityCode:new FormControl('', [Validators.required, Validators.pattern('[0-9]{3}')]),
-        expirationMonth:[''],
-        expirationYear:[''],
-      }),
+      // creditCard: this.formBuilder.group({
+      //   cardType:new FormControl('', [Validators.required]),
+      //   nameOnCard: new FormControl('', 
+      //   [Validators.required, Validators.minLength(2),
+      //   Click2ShopValidators.notOnlyWhitespace
+      //   ]),
+      //   cardNumber:new FormControl('', [Validators.required, Validators.pattern('[0-9]{16}')]),
+      //   securityCode:new FormControl('', [Validators.required, Validators.pattern('[0-9]{3}')]),
+      //   expirationMonth:[''],
+      //   expirationYear:[''],
+      // }),
     });
 
 
-    //populate credit card months
-    //JS Date obj months are 0 based(0 - 11), so we add 1 (1 - 12)
-    const startMonth:number = new Date().getMonth() + 1;
-    console.log("StartMonth: " + startMonth);
+    
+    // //populate credit card months
+    // //JS Date obj months are 0 based(0 - 11), so we add 1 (1 - 12)
+    // const startMonth:number = new Date().getMonth() + 1;
+    // console.log("StartMonth: " + startMonth);
 
-    // pass the startMonth as param to getCreditCardMonths to get valid range 
-    // of credit card months
-    this.click2shopformservice.getCreditCardMonths(startMonth).subscribe(
-      data => {
-        console.log("Retrieved credit cart months: " + JSON.stringify(data));
-        this.creditCardMonths = data; 
-      },
-    )
+    // // pass the startMonth as param to getCreditCardMonths to get valid range 
+    // // of credit card months
+    // this.click2shopformservice.getCreditCardMonths(startMonth).subscribe(
+    //   data => {
+    //     console.log("Retrieved credit cart months: " + JSON.stringify(data));
+    //     this.creditCardMonths = data; 
+    //   },
+    // )
     
 
-    //populate credit card years
-    this.click2shopformservice.getCreditCardYears().subscribe(
-      data => {
-        console.log("Retrieved credit cart years: " + JSON.stringify(data));
-        this.creditCardYears = data; 
-      },
-    )
+    // //populate credit card years
+    // this.click2shopformservice.getCreditCardYears().subscribe(
+    //   data => {
+    //     console.log("Retrieved credit cart years: " + JSON.stringify(data));
+    //     this.creditCardYears = data; 
+    //   },
+    // )
+
+    
+
+    
 
     //populate countries
     this.click2shopformservice.getCountries().subscribe(
@@ -156,6 +175,33 @@ export class CheckoutComponent implements OnInit {
       }
     )
   }
+
+
+  setupStripePaymentForm() {
+    // get a handle to stripe element
+    var elements = this.stripe.elements();
+
+    // create a card element ... and hide zip-code field
+    this.cardElement = elements.create('card', {hidePostalCode:true});
+
+    // add an instance of card UI component into the 'card-element' div
+    this.cardElement.mount('#card-element')
+
+    // add event binding for the 'change' event on the card element
+    this.cardElement.on('change', (event:any) => {
+      // get a handle to card-errors element
+      this.displayError = document.getElementById('card-errors');
+
+      if(event.complete) {
+        this.displayError.textContent = "";
+      } else if (event.error) {
+        //show validation error to customer
+        this.displayError.textContent = event.error.message;
+      }
+    })
+  }
+
+
   reviewCartDetails() {
     //subscribe to cartService.totalQuantity
     this.cartService.totalQuantity.subscribe(
@@ -309,22 +355,92 @@ export class CheckoutComponent implements OnInit {
     // populate purchase - order and orderItems
     purchase.order = order;
     purchase.orderItems = orderItems;
+
+
+    // compute Stripe payment info
+    this.paymentInfo.amount = Math.round(this.totalPrice * 100);
+    this.paymentInfo.currency = "USD";
+    this.paymentInfo.receiptEmail = purchase.customer.email;
+
+
+    // if valid form then
+    // - create payment intent 
+    // - confirm card payment
+    // - place order
+
+    console.log(`this.paymentInfo.amount: ${this.paymentInfo.amount}`);
     
-    // CALL REST API via the CheckoutService
-    this.checkoutService.placeOrder(purchase).subscribe(
-      {
-        next: response => {
-          alert(`Your order has been received.\nOrder tracking number:${response.orderTrackingNumber}`)
 
-          //reset cart
-          this.resetCart();
-
-        },
-        error: err => {
-          alert(`There was an error:${err.message}`);
+    if (!this.checkoutFormGroup.invalid && this.displayError.textContent === ""){
+      //Before REST API calls, set isDisable to true, once REST API calls complete, set is Disable to false
+      this.isDisabled = true;
+      this.checkoutService.createPaymentIntent(this.paymentInfo).subscribe(
+        (paymentIntentResponse) => {
+          this.stripe.confirmCardPayment(paymentIntentResponse.client_secret,
+            {
+              payment_method: {
+                card:this.cardElement,// reference the Stripe Elements component: cardElement
+                billing_details: {
+                  email:purchase.customer.email,
+                  name: `${purchase.customer.firstName} ${purchase.customer.lastName}`,
+                  address: {
+                    line1:purchase.billingAddress.street,
+                    city:purchase.billingAddress.city,
+                    state:purchase.billingAddress.state,
+                    postal_code:purchase.billingAddress.zipCode,
+                    country: this.billingAddressCountry.value.code
+                  }
+                }
+              } 
+            }, {
+              // confirm payment in client without handling next action
+              handleAction: false
+            })
+            .then((result: any) => {
+              if(result.error) {
+                // info the customer there was an error
+                alert(`There was an error: ${result.error.message}`);
+                this.isDisabled = false;
+              } else {
+                //Call REST API via the CheckoutService
+                //placeOrder will place the order by storing it in a MYSQL database using a spring boot rest API on the back
+                this.checkoutService.placeOrder(purchase).subscribe({
+                  next: (response: any) => {
+                    alert(`Your order has been received.\nOrder tracking number: ${response.orderTrackingNumber}`)
+                 
+                    //reset cart
+                    this.resetCart()
+                    this.isDisabled = false;
+                  },
+                  error:(err:any) => {
+                    alert(`There was an error: ${err.message}`)
+                    this.isDisabled = false;
+                  }
+                })      
+              }
+            }); //send credit card data directly to stripe.com servers
         }
-      }
-    )
+      )
+    } else {
+      this.checkoutFormGroup.markAllAsTouched();
+      return;
+    }
+    
+    // // CALL REST API via the CheckoutService
+    // this.checkoutService.placeOrder(purchase).subscribe(
+    //   {
+    //     next: response => {
+    //       alert(`Your order has been received.\nOrder tracking number:${response.orderTrackingNumber}`)
+
+    //       //reset cart
+    //       this.resetCart();
+
+    //     },
+    //     error: err => {
+    //       alert(`There was an error:${err.message}`);
+    //     }
+    //   }
+    // )
 
 
     // console.log('handling the submit button');
@@ -340,6 +456,7 @@ export class CheckoutComponent implements OnInit {
     this.cartService.cartItems = []
     this.cartService.totalPrice.next(0)
     this.cartService.totalQuantity.next(0)
+    this.cartService.persistCartItems(); // updates storage with latest state of cart prevents old cart info when browser refresh or angular frontend update
 
     //reset the form
     this.checkoutFormGroup.reset();
@@ -355,7 +472,7 @@ export class CheckoutComponent implements OnInit {
     const currentYear: number = new Date().getFullYear();
 
     //read the selected year from the form
-    const selectedYear: number =Number(creditCardFormGroup.value.expirationYear);
+    const selectedYear: number = Number(creditCardFormGroup.value.expirationYear);
 
     //if the current year equals the selected year, then start with the current month
 
@@ -371,7 +488,7 @@ export class CheckoutComponent implements OnInit {
     // of credit card months
     this.click2shopformservice.getCreditCardMonths(startMonth).subscribe(
       data => {
-        console.log("Retrieved credit cart months: " + JSON.stringify(data));
+        console.log("Retrieved credit card months: " + JSON.stringify(data));
         this.creditCardMonths = data; 
       },
     )
